@@ -22,6 +22,8 @@ const ProfileScreen = () => {
     getProfile();
   }, []);
 
+  //changed
+
   if (loading) {
     return (
       <View style={styles.loading}>
