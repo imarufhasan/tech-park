@@ -1,10 +1,10 @@
-import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
   Alert,
   Modal,
   StyleSheet,
   Text,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -18,17 +18,14 @@ interface Props {
     id: number;
   };
   onPress: () => void;
-  onSave?: (job: any) => void; // for saving job
+  onSave?: (job: any) => void;
+  onApply?: (jobId: number) => void;
   saved?: boolean;
+  applied?: boolean;
 }
 
 const JobCard = ({ item, onPress, onSave, saved }: Props) => {
   const [modalVisible, setModalVisible] = useState(false);
-
-  const handleApply = () => {
-    setModalVisible(false);
-    Alert.alert("Success", "You have successfully applied for this job!");
-  };
 
   return (
     <View style={styles.card}>
@@ -47,14 +44,25 @@ const JobCard = ({ item, onPress, onSave, saved }: Props) => {
 
       {/* Action Buttons */}
       <View style={styles.actionRow}>
-        <TouchableOpacity
-          style={styles.applyButton}
-          onPress={() => setModalVisible(true)}
-        >
-          <Text style={styles.applyText}>Apply Now</Text>
-        </TouchableOpacity>
+        {saved ? (
+          <TouchableOpacity
+            onPress={() =>
+              ToastAndroid.show("Already Applied", ToastAndroid.SHORT)
+            }
+            style={[styles.applyButton, { backgroundColor: "#9ca3af" }]}
+          >
+            <Text style={styles.applyText}>Already Applied</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            style={styles.applyButton}
+            onPress={() => setModalVisible(true)}
+          >
+            <Text style={styles.applyText}>Apply Now</Text>
+          </TouchableOpacity>
+        )}
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => onSave && onSave(item)}
           style={styles.saveButton}
         >
@@ -63,7 +71,7 @@ const JobCard = ({ item, onPress, onSave, saved }: Props) => {
             size={24}
             color="#3b82f6"
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       {/* Apply Modal */}
@@ -82,7 +90,14 @@ const JobCard = ({ item, onPress, onSave, saved }: Props) => {
             <View style={styles.modalButtons}>
               <TouchableOpacity
                 style={[styles.modalButton, { backgroundColor: "#10b981" }]}
-                onPress={handleApply}
+                onPress={() => {
+                  setModalVisible(false);
+                  Alert.alert(
+                    "Success",
+                    "You have successfully applied for this job!"
+                  );
+                  onSave && onSave(item);
+                }}
               >
                 <Text style={styles.modalButtonText}>Yes, Apply</Text>
               </TouchableOpacity>
@@ -139,7 +154,7 @@ const styles = StyleSheet.create({
   },
   actionRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
     alignItems: "center",
   },
   applyButton: {
@@ -168,11 +183,6 @@ const styles = StyleSheet.create({
     padding: 24,
     borderRadius: 16,
     width: "80%",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
   },
   modalTitle: {
     fontSize: 20,
