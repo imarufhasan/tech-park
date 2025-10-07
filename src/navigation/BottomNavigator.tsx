@@ -5,11 +5,13 @@ import HomeScreen from "../screens/home/HomeScreen";
 import SavedJobsScreen from "../screens/product/SavedJobsScreen";
 import ProfileScreen from "../screens/profile/ProfileScreen";
 
-// Screens
-
 const Tab = createBottomTabNavigator();
 
-const BottomNavigator = () => {
+interface BottomNavigatorProps {
+  setIsLoggedIn: (value: boolean) => void;
+}
+
+const BottomNavigator = ({ setIsLoggedIn }: BottomNavigatorProps) => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -41,11 +43,11 @@ const BottomNavigator = () => {
         component={SavedJobsScreen}
         options={{ title: "Saved Jobs" }}
       />
-      <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={{ title: "Profile" }}
-      />
+
+      {/* Pass setIsLoggedIn to ProfileScreen for logout */}
+      <Tab.Screen name="Profile" options={{ title: "Profile" }}>
+        {(props) => <ProfileScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 };
